@@ -18,10 +18,10 @@ public class Alien extends gameObject{
 	
 	public void move() {
 		// TODO Auto-generated method stub
-		if(x < 0) {
-			x = initX;
-		}
+//		if(x < 0) {
+//			x = initX;
+//		}
 		
-		x -= 1;
+		y += 2;
 	}
 }

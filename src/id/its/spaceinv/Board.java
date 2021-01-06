@@ -28,23 +28,15 @@ public class Board extends JPanel implements ActionListener{
 	private Spaceship spaceship;
 	private List<Alien> aliens;
 	private boolean ingame;
-	private final int spaceshipStartX = 150;
-	private final int spaceshipStartY = 60;
-	private final int boxWidth = 300;
-	private final int boxHeight = 500;
+	private final int spaceshipStartX = 235;
+	private final int spaceshipStartY = 550;
+	private final int boxWidth = 500;
+	private final int boxHeight = 600;
 	private final int delay = 15;
 	
 	private final int [][] pos = {
 			
-			{2380, 29}, {2500, 59}, {1380, 89},
-	        {780, 109}, {580, 139}, {680, 239},
-	        {790, 259}, {760, 50}, {790, 150},
-	        {980, 209}, {560, 45}, {510, 70},
-	        {930, 159}, {590, 80}, {530, 60},
-	        {940, 59}, {990, 30}, {920, 200},
-	        {900, 259}, {660, 50}, {540, 90},
-	        {810, 220}, {860, 20}, {740, 180},
-	        {820, 128}, {490, 170}, {700, 30}
+			{100,100},{200,200}
 	        
 	};
 	
@@ -60,7 +52,7 @@ public class Board extends JPanel implements ActionListener{
 		ingame = true;
 		
 		setPreferredSize(new Dimension(boxWidth,boxHeight));
-		spaceship = new Spaceship(spaceshipStartX, spaceshipStartY);
+		spaceship = new Spaceship(spaceshipStartX, spaceshipStartY,4,4);
 		
 		initAliens();
 		
@@ -97,6 +89,7 @@ public class Board extends JPanel implements ActionListener{
 	private void drawObjects(Graphics g) {
 		// TODO Auto-generated method stub
 		if(spaceship.isVisible()) {
+			
 			BufferedImage image = toBufferedImage(spaceship.getImage());
 			image = rotateImage(image);
 			g.drawImage(image, spaceship.getX(), spaceship.getY(), this);
@@ -107,7 +100,9 @@ public class Board extends JPanel implements ActionListener{
 		
 		for(Missile m : missile) {
 			if(m.isVisible()) {
-				g.drawImage(m.getImage(), m.getX(), m.getY(), this);
+				BufferedImage image = toBufferedImage(m.getImage());
+				image = rotateImage(image);
+				g.drawImage(image, m.getX(), m.getY(), this);
 			}
 		}
 		

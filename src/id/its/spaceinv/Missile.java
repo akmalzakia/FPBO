@@ -19,9 +19,9 @@ public class Missile extends gameObject{
 	
 	public void move() {
 		// TODO Auto-generated method stub
-		x += speed;
+		y -= speed;
 		
-		if( x > boxWidth) {
+		if( y < 0) {
 			setVisible(false);
 		}
 	}
