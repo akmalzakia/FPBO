@@ -76,6 +76,9 @@ public class Board extends JPanel implements ActionListener{
 		if(ingame) {
 			drawObjects(g);
 		}
+		else if(aliens.isEmpty()){
+			drawYouWin(g);
+		}
 		else {
 			drawGameOver(g);
 		}
@@ -116,6 +119,17 @@ public class Board extends JPanel implements ActionListener{
 		g.drawString("Aliens left : " + aliens.size(), 5, 15);
 	}
 	
+	private void drawYouWin(Graphics g){
+		// TODO Auto-generated method stub
+		String msg = "You Win";
+		Font small = new Font("Helvetica", Font.BOLD, 14);
+		FontMetrics fm = getFontMetrics(small);
+		
+		g.setColor(Color.WHITE);
+		g.setFont(small);
+		g.drawString(msg, (boxWidth - fm.stringWidth(msg)) / 2, (boxHeight - fm.getHeight()) / 2);
+	}
+
 	private void drawGameOver(Graphics g) {
 		// TODO Auto-generated method stub
 		String msg = "Game Over";
