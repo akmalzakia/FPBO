@@ -2,6 +2,7 @@ package id.its.spaceinv;
 
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -29,13 +30,14 @@ public class TitleScreen extends JFrame{
 	
 	public TitleScreen() {
 
-		setSize(800, 600);
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setBackground(Color.BLACK);
 		setLayout(null);
-		setVisible(true);
-		con = getContentPane();
 		
+		con = getContentPane();
+		con.setPreferredSize(new Dimension(800,600));
+		setResizable(false);
 		setTitle("ALIEN DESTROYER");
 		
 		titleNamePanel = new JPanel();
@@ -51,14 +53,19 @@ public class TitleScreen extends JFrame{
 		
 		startButton = new JButton("START");
 		startButton.setBackground(Color.black);
-		startButton.setForeground(Color.white);
+		startButton.setForeground(Color.BLACK);
 		startButton.setFont(startFont);
 		startButton.addActionListener(tsHandler);
 		
 		titleNamePanel.add(titleNameLabel);
 		startButtonPanel.add(startButton);
+		
 		con.add(titleNamePanel);
 		con.add(startButtonPanel);
+		
+		pack();
+		setVisible(true);
+		
 	}
 	
 	public class TitleScreenHandler implements ActionListener{
@@ -68,8 +75,7 @@ public class TitleScreen extends JFrame{
 			// TODO Auto-generated method stub
 			EventQueue.invokeLater(() -> {
 				CollisionEx ex = new CollisionEx();
-				titleNamePanel.setVisible(false);
-				setVisible(false);
+				dispose();
 				ex.setVisible(true);
 			});
 		}

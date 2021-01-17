@@ -9,6 +9,7 @@ import java.util.TimerTask;
 
 public class Spaceship extends gameObject implements KeyListener{
 	
+	private int hp = 3;
 	private int dx;
 	private int dy;
 	private int speedX;
@@ -16,11 +17,13 @@ public class Spaceship extends gameObject implements KeyListener{
 	private List<Missile> missiles;
 	private long lastShotTime;
 	private boolean isFiring;
+	private int shotMode;
 	
 	public Spaceship(int x, int y,int speedX, int speedY) {
 		super(x, y);
 		this.speedX = speedX;
 		this.speedY = speedY;
+		shotMode = 1;
 		// TODO Auto-generated constructor stub
 		initialize();
 	}
@@ -30,6 +33,23 @@ public class Spaceship extends gameObject implements KeyListener{
 		loadImage("src/resources/spaceship30.png");
 		getImageDimensions();
 	}
+	
+	public void setShotMode(int shotMode) {
+		this.shotMode = shotMode;
+	}
+	
+	public int getHp() {
+		return hp;
+	}
+	
+	public void decreaseHP() {
+		hp--;
+	}
+	
+	public void increaseHP() {
+		hp++;
+	}
+	
 	
 	public void move() {
 		// TODO Auto-generated method stub
@@ -44,7 +64,7 @@ public class Spaceship extends gameObject implements KeyListener{
 			y = 1;
 		}
 		
-		if(isFiring && System.currentTimeMillis() - lastShotTime > 200) {
+		if(isFiring && System.currentTimeMillis() - lastShotTime > 400) {
 			fire();
 		}
 	}
@@ -60,7 +80,7 @@ public class Spaceship extends gameObject implements KeyListener{
 		int key = e.getKeyCode();
 		
 		if(key == KeyEvent.VK_SPACE) {	
-			if(System.currentTimeMillis() - lastShotTime > 200) {
+			if(System.currentTimeMillis() - lastShotTime > 400) {
 				isFiring = true;
 			}
 		}
@@ -81,7 +101,15 @@ public class Spaceship extends gameObject implements KeyListener{
 	
 	private void fire() {
 		// TODO Auto-generated method stub
-		missiles.add(new Missile(x + 5 , y - height));
+		if(shotMode == 0) {
+			missiles.add(new Missile(x + 5 , y - height));
+			
+		}
+		else if(shotMode == 1){
+			missiles.add(new Missile(x , y - height));
+			missiles.add(new Missile(x + 10,y - height));
+		}
+		
 		lastShotTime = System.currentTimeMillis();
 	}
 	

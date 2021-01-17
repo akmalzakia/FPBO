@@ -22,6 +22,8 @@ public class Alien extends gameObject{
 //			x = initX;
 //		}
 		
+		
 		y += 2;
+	
 	}
 }

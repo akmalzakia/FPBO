@@ -24,48 +24,62 @@ import javax.swing.Timer;
 import javax.swing.JPanel;
 
 public class Board extends JPanel implements ActionListener{
+	
+	private CollisionEx frame;
 	private Timer timer;
 	private Spaceship spaceship;
+	private AlienBoss alienBoss;
 	private List<Alien> aliens;
-	private boolean ingame;
-	private final int spaceshipStartX = 235;
-	private final int spaceshipStartY = 550;
+	private String level = "Level 1";
+	public boolean ingame;
+	private int spaceshipStartX = 235;
+	private int spaceshipStartY = 550;
 	private final int boxWidth = 500;
 	private final int boxHeight = 600;
 	private final int delay = 15;
+	private int bossCount = 1;
 	
-	private final int [][] pos = {
-			
-			{100,100},{200,200}
-	        
-	};
 	
-	public Board() {
+	public Board(CollisionEx frame) {
+		this.frame = frame;
 		initBoard();
 	}
 	
 	private void initBoard() {
+		LevelData.setLevel(level);
 		// TODO Auto-generated method stub
-		addKeyListener(new TAdapter());
+		addKeyListener(new SpaceshipAdapter(this));
 		setFocusable(true);
 		setBackground(Color.BLACK);
 		ingame = true;
 		
 		setPreferredSize(new Dimension(boxWidth,boxHeight));
-		spaceship = new Spaceship(spaceshipStartX, spaceshipStartY,4,4);
+		spaceshipStartX = LevelData.getPlayerPos().x;
+		spaceshipStartY = LevelData.getPlayerPos().y;
 		
+		initPlayer();
 		initAliens();
+		initBoss();
+		
 		
 		timer = new Timer(delay, this);
 		timer.start();
+		
+	}
+	
+	
+	private void initBoss() {
+		alienBoss = LevelData.getAlienBoss();
 	}
 	
 	private void initAliens() {
 		// TODO Auto-generated method stub
-		aliens = new ArrayList<Alien>();
-		for(int[] p : pos) {
-			aliens.add(new Alien(p[0],p[1]));
-		}
+		aliens = LevelData.getAlien();
+	}
+	
+	private void initPlayer() {
+		// TODO Auto-generated method stub
+		spaceship = new Spaceship(spaceshipStartX, spaceshipStartY,4,4);
 	}
 	
 	@Override
@@ -76,15 +90,21 @@ public class Board extends JPanel implements ActionListener{
 		if(ingame) {
 			drawObjects(g);
 		}
-		else if(aliens.isEmpty()){
-			drawYouWin(g);
-		}
 		else {
-			drawGameOver(g);
+			if(aliens.isEmpty()) {
+				drawYouWin(g);
+			}
+			else {
+				drawGameOver(g);
+			}
 		}
 		
 		Toolkit.getDefaultToolkit().sync();
 		
+	}
+	
+	public boolean isIngame() {
+		return ingame;
 	}
 	
 	
@@ -115,8 +135,34 @@ public class Board extends JPanel implements ActionListener{
 			}
 		}
 		
+		if(alienBoss.isVisible()) {
+			g.drawImage(alienBoss.getImage(),alienBoss.getX(),alienBoss.getY(),this);
+		}
+		
+		List<EnemyBullet> bullet = alienBoss.getBullet();
+		
+		for(EnemyBullet b : bullet) {
+			if(b.isVisible()) {
+				g.drawImage(b.getImage(),b.getX(),b.getY(),this);
+			}
+		}
+		
 		g.setColor(Color.WHITE);
-		g.drawString("Aliens left : " + aliens.size(), 5, 15);
+		
+		drawUI(g);
+		g.drawString("Aliens left : " + (aliens.size() + bossCount), 5, 15);
+	}
+	
+	private void drawUI(Graphics g) {
+		// TODO Auto-generated method stub
+		
+		
+		BufferedImage image = toBufferedImage(spaceship.getImage());
+		image = rotateImage(image);
+		for(int i = 0; i < spaceship.getHp(); i++) {
+			g.drawImage(image,460 - (i * 30),10,null);
+		}
+		
 	}
 	
 	private void drawGameOver(Graphics g) {
@@ -149,6 +195,8 @@ public class Board extends JPanel implements ActionListener{
 		updateShip();
 		updateMissiles();
 		updateAliens();
+		updateAlienBoss();
+		updateEnemyBullets();
 		
 		checkCollisions();
 		
@@ -163,6 +211,11 @@ public class Board extends JPanel implements ActionListener{
 	}
 	
 	private void updateShip() {
+		
+		if(spaceship.getHp() <= 0) {
+			spaceship.setVisible(false);
+			ingame = false;
+		}
 		// TODO Auto-generated method stub
 		if(spaceship.isVisible()) {
 			spaceship.move();
@@ -187,36 +240,95 @@ public class Board extends JPanel implements ActionListener{
 	private void updateAliens() {
 		// TODO Auto-generated method stub
 		if(aliens.isEmpty()) {
-			ingame = false;
-			return;
+//			ingame = false;
+//			return;
 		}
 		
 		for(int i = 0; i < aliens.size(); i++) {
 			Alien a = aliens.get(i);
 			
 			if(a.isVisible()) {
+				
 				a.move();
+				
+				if(a.y > boxHeight) {
+					a.setVisible(false);
+				}
 			}
 			else {
 				aliens.remove(i);
 			}
 		}
 	}
+
+	
+	private void updateEnemyBullets() {
+		List<EnemyBullet> b = alienBoss.getBullet();
+		
+		for(int i = 0; i < b.size(); i++) {
+			EnemyBullet eb = b.get(i);
+			if(eb.isVisible()) {
+				eb.move();
+			}
+			else {
+				b.remove(i);
+			}
+		}
+	}
+	
+	private void updateAlienBoss() {
+		if(alienBoss.isVisible()) {
+			if(!alienBoss.isReadyToShoot()) {
+				
+				if(alienBoss.getY() < alienBoss.getPositionY()) {
+					alienBoss.initialMove();
+				}
+				else {
+					alienBoss.setReadyToShoot(true);
+				}
+			}
+			else {
+				alienBoss.bossBehavior();
+			}
+			
+		}
+		else {
+			bossCount--;
+		}
+	}
+	
+	
 	
 	private void checkCollisions() {
 		// TODO Auto-generated method stub
 		Rectangle ship = spaceship.getBounds();
+		Rectangle boss = alienBoss.getBounds();
+		List<Missile> ms = spaceship.getMissiles();
+		List<EnemyBullet> b = alienBoss.getBullet();
+		
 		
 		for(Alien a : aliens) {
 			Rectangle alien = a.getBounds();
 			if(ship.intersects(alien)) {
-				spaceship.setVisible(false);
+//				spaceship.setVisible(false);
+				spaceship.decreaseHP();
 				a.setVisible(false);
-				ingame = false;
+//				ingame = false;
 			}
 		}
 		
-		List<Missile> ms = spaceship.getMissiles();
+		for(EnemyBullet eb : b) {
+			Rectangle bullet = eb.getBounds();
+			
+			if(ship.intersects(bullet)) {
+//				spaceship.setVisible(false);
+				spaceship.decreaseHP();
+				eb.setVisible(false);
+//				ingame = false;
+			}
+		}
+		
+		
 		
 		for(Missile m : ms) {
 			Rectangle missile = m.getBounds();
@@ -224,28 +336,68 @@ public class Board extends JPanel implements ActionListener{
 			for(Alien a : aliens) {
 				Rectangle alien = a.getBounds();
 				
-				if(missile.intersects(alien)) {
+				if(missile.intersects(alien) && onBoard(m.x, m.y)) {
 					m.setVisible(false);
 					a.setVisible(false);
 				}
 			}
 		}
+		
+		for(Missile m : ms) {
+			Rectangle missile = m.getBounds();
+			if(boss.intersects(missile)) {
+				m.setVisible(false);
+				alienBoss.decreaseHP(m.getDamage());
+				System.out.println(alienBoss.getHp());
+			}
+		}
+		
+		
 	}
 	
-	private class TAdapter extends KeyAdapter {
+	private boolean onBoard(int x, int y) {
+		return x >= 0 && x <= boxWidth && y >=0 && y <= boxHeight;
+	}
+	
+	private class SpaceshipAdapter extends KeyAdapter {
 		// TODO Auto-generated method stub
+		Board board;
+		
+		public SpaceshipAdapter(Board board) {
+			this.board = board;
+		}
+		
 		@Override
 		public void keyReleased(KeyEvent e) {
 			// TODO Auto-generated method stub
-			spaceship.keyReleased(e);
+			if(board.ingame) {
+				spaceship.keyReleased(e);
+			}
 		}
 		
 		@Override
 		public void keyPressed(KeyEvent e) {
 			// TODO Auto-generated method stub
-			spaceship.keyPressed(e);
+			if(board.ingame) {
+				spaceship.keyPressed(e);
+			}
+			else {
+				int key = e.getKeyCode();
+				
+				if(key == KeyEvent.VK_SPACE) {
+					TitleScreen ts = new TitleScreen();
+					frame.dispose();
+					ts.setVisible(true);
+					
+				}
+			}
+			
 		}
+		
 	}
+	
+	
+	
 	
 	public static BufferedImage toBufferedImage(Image img)
 	{

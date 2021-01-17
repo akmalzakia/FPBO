@@ -4,11 +4,16 @@ public class Missile extends gameObject{
 	
 	private final int boxWidth = 390;
 	private final int speed = 2;
+	private final int damage = 2;
 	
 	public Missile(int x, int y) {
 		super(x, y);
 		// TODO Auto-generated constructor stub
 		initMissile();
+	}
+	
+	public int getDamage() {
+		return damage;
 	}
 	
 	private void initMissile() {
