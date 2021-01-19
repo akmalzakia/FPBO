@@ -4,8 +4,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Spaceship extends gameObject implements KeyListener{
 	
@@ -62,6 +60,14 @@ public class Spaceship extends gameObject implements KeyListener{
 		
 		if(y < 1) {
 			y = 1;
+		}
+		
+		if(x > 470) {
+			x = 470;
+		}
+		
+		if(y > 570) {
+			y = 570;
 		}
 		
 		if(isFiring && System.currentTimeMillis() - lastShotTime > 400) {

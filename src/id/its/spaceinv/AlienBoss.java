@@ -16,7 +16,7 @@ public class AlienBoss extends gameObject{
 	private int moveRightDirection = 1;
 	private long lastShotTime = 0;
 	private int shot = 0;
-	private long lastTripleShotTime = 0;
+//	private long lastTripleShotTime = 0;
 	
 
 	public AlienBoss(int x, int y ,int hp) {

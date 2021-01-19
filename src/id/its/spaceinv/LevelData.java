@@ -1,6 +1,7 @@
 package id.its.spaceinv;
 
 import java.awt.Point;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -27,14 +28,39 @@ public class LevelData {
 		ArrayList<Alien> aliens;
 		
 		playerList.put(LEVEL1, new Point(235,550));
-		bossList.put(LEVEL1, new AlienBoss(160, -50, 200));
+		bossList.put(LEVEL1, new AlienBoss(160, -3000, 100));
 		aliens = new ArrayList<Alien>();
-		aliens.add(new Alien(200,50));
-		aliens.add(new Alien(300,150));
-		aliens.add(new Alien(400,250));
-		aliens.add(new Alien(200,150));
-		aliens.add(new Alien(200,250));
-		aliens.add(new Alien(300,250));
+		int xtemp = 0;
+		int ytemp = 0;
+		
+		for(int i=0;i<2;i++) {
+			for(int j=0;j<12;j++) {
+				aliens.add(new Alien(xtemp+20,ytemp-10));
+				aliens.add(new Alien(xtemp+20,ytemp-1600));
+				
+				aliens.add(new Alien3(xtemp+20,ytemp-2500));
+				if((j>0&&j<4) || (j>7&&j<11)) {
+					aliens.add(new Alien3(xtemp+20,ytemp-5000));
+				}
+				xtemp+=40;
+			}
+			xtemp=0;
+			ytemp+=40;
+		}
+		
+		
+		for(int i=0;i<2;i++) {
+			for(int j=0;j<8;j++) {
+				aliens.add(new Alien2(xtemp+20,ytemp-600));
+				aliens.add(new Alien2(xtemp+20,ytemp-1600));
+				xtemp+=40;
+			}
+			xtemp=0;
+			ytemp+=40;
+		}
+		
+		
+//		aliens.add(new Alien(xtemp+20,ytemp-10));
 		aliensList.put(LEVEL1, aliens);
 		
 		

@@ -2,8 +2,8 @@ package id.its.spaceinv;
 
 public class Missile extends gameObject{
 	
-	private final int boxWidth = 390;
-	private final int speed = 2;
+//	private final int boxWidth = 390;
+	private final int speed = 5;
 	private final int damage = 2;
 	
 	public Missile(int x, int y) {

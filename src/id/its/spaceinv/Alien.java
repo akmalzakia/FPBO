@@ -1,7 +1,7 @@
 package id.its.spaceinv;
 
 public class Alien extends gameObject{
-	private final int initX = 400;
+//	private final int initX = 400;
 	
 	public Alien(int x, int y) {
 		// TODO Auto-generated constructor stub
@@ -10,7 +10,7 @@ public class Alien extends gameObject{
 		initAlien();
 	}
 	
-	private void initAlien() {
+	protected void initAlien() {
 		// TODO Auto-generated method stub
 		loadImage("src/resources/ufo30.png");
 		getImageDimensions();
@@ -22,8 +22,7 @@ public class Alien extends gameObject{
 //			x = initX;
 //		}
 		
-		
-		y += 2;
-	
+		y += 1;
 	}
+	
 }

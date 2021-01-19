@@ -16,7 +16,6 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Timer;
 
@@ -38,6 +37,8 @@ public class Board extends JPanel implements ActionListener{
 	private final int boxHeight = 600;
 	private final int delay = 15;
 	private int bossCount = 1;
+	private int totalaliens;
+	private int score=0;
 	
 	
 	public Board(CollisionEx frame) {
@@ -91,7 +92,7 @@ public class Board extends JPanel implements ActionListener{
 			drawObjects(g);
 		}
 		else {
-			if(aliens.isEmpty()) {
+			if(getTotalaliens()<=0) {
 				drawYouWin(g);
 			}
 			else {
@@ -148,9 +149,10 @@ public class Board extends JPanel implements ActionListener{
 		}
 		
 		g.setColor(Color.WHITE);
-		
+		setTotalaliens();
 		drawUI(g);
-		g.drawString("Aliens left : " + (aliens.size() + bossCount), 5, 15);
+		g.drawString("Aliens left : " + (totalaliens), 5, 15);
+
 	}
 	
 	private void drawUI(Graphics g) {
@@ -168,23 +170,29 @@ public class Board extends JPanel implements ActionListener{
 	private void drawGameOver(Graphics g) {
 		// TODO Auto-generated method stub
 		String msg = "Game Over";
+		String finalscore = "Score :" + this.score;
 		Font small = new Font("Helvetica", Font.BOLD, 14);
 		FontMetrics fm = getFontMetrics(small);
 		
 		g.setColor(Color.WHITE);
 		g.setFont(small);
-		g.drawString(msg, (boxWidth - fm.stringWidth(msg)) / 2, (boxHeight - fm.getHeight()) / 2);
+		g.drawString(msg, (boxWidth - fm.stringWidth(msg)) / 2, (boxHeight - fm.getHeight()) / 2 - 50);
+		g.drawString(finalscore, (boxWidth - fm.stringWidth(finalscore)) / 2, (boxHeight - fm.getHeight()) / 2 + 50);
+		
 	}
 	
 	private void drawYouWin(Graphics g){
 		// TODO Auto-generated method stub
 		String msg = "You Win";
+		String finalscore = "Score :" + this.score;
 		Font small = new Font("Helvetica", Font.BOLD, 14);
 		FontMetrics fm = getFontMetrics(small);
 		
+		
 		g.setColor(Color.WHITE);
 		g.setFont(small);
-		g.drawString(msg, (boxWidth - fm.stringWidth(msg)) / 2, (boxHeight - fm.getHeight()) / 2);
+		g.drawString(msg, (boxWidth - fm.stringWidth(msg)) / 2, (boxHeight - fm.getHeight()) / 2 - 50);
+		g.drawString(finalscore, (boxWidth - fm.stringWidth(finalscore)) / 2, (boxHeight - fm.getHeight()) / 2 + 50);
 	}
 	
 	@Override
@@ -195,6 +203,9 @@ public class Board extends JPanel implements ActionListener{
 		updateShip();
 		updateMissiles();
 		updateAliens();
+		if(aliens.size()==0) {
+			initBoss();
+		}
 		updateAlienBoss();
 		updateEnemyBullets();
 		
@@ -212,7 +223,7 @@ public class Board extends JPanel implements ActionListener{
 	
 	private void updateShip() {
 		
-		if(spaceship.getHp() <= 0) {
+		if(spaceship.getHp() <= 0 || getTotalaliens()<=0) {
 			spaceship.setVisible(false);
 			ingame = false;
 		}
@@ -239,10 +250,6 @@ public class Board extends JPanel implements ActionListener{
 	
 	private void updateAliens() {
 		// TODO Auto-generated method stub
-		if(aliens.isEmpty()) {
-//			ingame = false;
-//			return;
-		}
 		
 		for(int i = 0; i < aliens.size(); i++) {
 			Alien a = aliens.get(i);
@@ -292,8 +299,9 @@ public class Board extends JPanel implements ActionListener{
 			}
 			
 		}
-		else {
+		else if(bossCount>0){
 			bossCount--;
+			score += 1000;
 		}
 	}
 	
@@ -337,6 +345,7 @@ public class Board extends JPanel implements ActionListener{
 				Rectangle alien = a.getBounds();
 				
 				if(missile.intersects(alien) && onBoard(m.x, m.y)) {
+					score += 100;
 					m.setVisible(false);
 					a.setVisible(false);
 				}
@@ -352,6 +361,9 @@ public class Board extends JPanel implements ActionListener{
 			}
 		}
 		
+		if(ship.intersects(boss)) {
+			ingame=false;
+		}
 		
 	}
 	
@@ -433,6 +445,14 @@ public class Board extends JPanel implements ActionListener{
 		rotateOp.filter(image, rotatedImage);
 		
 		return rotatedImage;
+	}
+
+	public int getTotalaliens() {
+		return totalaliens;
+	}
+
+	public void setTotalaliens() {
+		this.totalaliens = aliens.size()+bossCount;
 	}
 	
 	

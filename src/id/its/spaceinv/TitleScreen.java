@@ -62,10 +62,8 @@ public class TitleScreen extends JFrame{
 		
 		con.add(titleNamePanel);
 		con.add(startButtonPanel);
-		
 		pack();
 		setVisible(true);
-		
 	}
 	
 	public class TitleScreenHandler implements ActionListener{
@@ -82,3 +80,4 @@ public class TitleScreen extends JFrame{
 		
 	}
 }
+
